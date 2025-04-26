@@ -14,3 +14,4 @@ urlpatterns = [
     path('user-detail', UserDetailView.as_view(), name='user-detail'),
     path('user-profile', UserProfileView.as_view(), name='user-profile'),
 ]
+
