@@ -6,7 +6,7 @@ from datetime import timedelta
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # Application definition
 INSTALLED_APPS = [
@@ -22,8 +22,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     
     # Local apps
-    'apps.accounts',
-    # 'apps.users',
+    'apps.identity',
 
     'config',
 
@@ -116,9 +115,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Custom User Model
-# AUTH_USER_MODEL = 'users.User'
-AUTH_USER_MODEL = 'accounts.User'
+
 
 # REST Framework settings
 REST_FRAMEWORK = {
@@ -134,3 +131,6 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
 }
+
+
+AUTH_USER_MODEL = 'identity.User'

@@ -1,18 +1,11 @@
 import os
 
-# Determine which settings to import based on the environment
 env = os.getenv("DJANGO_ENV", "development").lower()
 
 if env == "production":
-    from .production import *
+    from .production import *  # noqa: F403
 elif env == "test":
-    from .test import *
+    from .test import *  # noqa: F403
 else:
-    from .development import *
+    from .development import *  # noqa: F403
 
-# Optional: Verify critical settings are configured
-if not DEBUG and not ALLOWED_HOSTS:
-    raise RuntimeError(
-        "You must set settings.ALLOWED_HOSTS when DEBUG=False. "
-        "Check your environment-specific settings file."
-    )
