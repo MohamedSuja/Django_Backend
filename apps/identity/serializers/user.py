@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.utils import timezone
+from rest_framework.validators import UniqueValidator
 
 User = get_user_model()
 
@@ -37,9 +39,28 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             user_type=validated_data['user_type']
         )
         return user
+    
 
-class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    def validate(self, attrs):
-        data = super().validate(attrs)
-        data['user_type'] = self.user.user_type
-        return data
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'user_type', "is_active", "username", "last_login", "created_date", "updated_date")
+        read_only_fields = ('email', 'user_type')
+
+
+class LoginRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    password = serializers.CharField(
+        required=True,
+        write_only=True,
+        style={'input_type': 'password'}
+    )
+    
+class TokenResponseSerializer(serializers.Serializer):
+    access_token = serializers.CharField()
+    refresh_token = serializers.CharField()
+    access_token_expiration = serializers.DateTimeField()
+    user_type = UserTypeField()
+
+class RefreshTokenRequestSerializer(serializers.Serializer):
+    refresh_token = serializers.CharField(required=True)

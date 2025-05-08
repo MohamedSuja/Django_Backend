@@ -6,6 +6,5 @@ python-dotenv
 django-cors-headers
 whitenoise
 Pillow
-psycopg2-binary
 django-debug-toolbar
 djangorestframework-simplejwt
