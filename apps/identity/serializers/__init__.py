@@ -1,6 +1,6 @@
-from .user import CustomTokenObtainPairSerializer, UserSerializer
+from .user import UserRegistrationSerializer, CustomTokenObtainPairSerializer
 
 __all__ = [
-    'UserSerializer',
+    'UserRegistrationSerializer',
     'CustomTokenObtainPairSerializer'
 ]

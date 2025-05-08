@@ -1,8 +1,6 @@
-from .user import CustomTokenObtainPairView, RegisterView, AdminOnlyView, ManagerOrAdminView
+from .user import  RegisterView, CustomTokenObtainPairView
 
 __all__ = [
-    'CustomTokenObtainPairView',
     'RegisterView',
-    'AdminOnlyView',
-    'ManagerOrAdminView'
+    'CustomTokenObtainPairView'
 ]

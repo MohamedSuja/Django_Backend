@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 import debug_toolbar
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('apps.identity.urls')),
+    path('admin', admin.site.urls),
+    path('api/v1/auth', include('apps.identity.urls')),
     path('__debug__', include(debug_toolbar.urls))
 ]
 

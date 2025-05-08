@@ -1,38 +1,23 @@
-from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import PermissionsMixin
 from django.db import models
-from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.models import AbstractUser
 
-class User(AbstractUser, PermissionsMixin):
-    ADMIN = 1
-    MANAGER = 2
-    EMPLOYEE = 3
-
-    ROLE_CHOICES = (
+class User(AbstractUser):
+    CUSTOMER = 1
+    STAFF = 2
+    ADMIN = 3
+    
+    USER_TYPE_CHOICES = (
+        (CUSTOMER, 'Customer'),
+        (STAFF, 'Staff'),
         (ADMIN, 'Admin'),
-        (MANAGER, 'Manager'),
-        (EMPLOYEE, 'Employee')
     )
     
-    email = models.EmailField(_('email address'), unique=True)
     
+    user_type = models.PositiveSmallIntegerField(choices=USER_TYPE_CHOICES, default=CUSTOMER)
+    email = models.EmailField(unique=True)
+
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
-
+    REQUIRED_FIELDS = ['password', 'user_type' ]
     
     def __str__(self):
         return self.email
-    
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
-
-    @property
-    def is_manager(self):
-        return self.role == self.MANAGER
-
-    @property
-    def is_employee(self):
-        return self.role == self.EMPLOYEE
