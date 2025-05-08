@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 import os
-from ..serializers import UserRegistrationSerializer, LoginRequestSerializer, TokenResponseSerializer, RefreshTokenRequestSerializer
+from ..serializers import UserRegistrationSerializer, LoginRequestSerializer, TokenResponseSerializer, RefreshTokenRequestSerializer, UserSerializer
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 import jwt, datetime
@@ -210,19 +210,30 @@ class TokenRefreshView(APIView):
             raise AuthenticationFailed('Invalid refresh token!')
 
 
-class UserView(APIView):
-
+class UserView(APIView):  
     def get(self, request):
-        token = request.COOKIES.get('jwt')
+        # Get Bearer token from request headers
+        
+        auth_header =  request.META.get('HTTP_AUTHORIZATION')
+        print("Token:", auth_header)
+        if auth_header:
+            token = auth_header.split(' ')[1]
+            
+        else:
+            token = None
 
         if not token:
             raise AuthenticationFailed('Unauthenticated!')
+        
+        
 
         try:
-            payload = jwt.decode(token, 'secret', algorithm=['HS256'])
+            secret_key = os.getenv("SECRET_KEY", "").lower()
+            payload = jwt.decode(token, secret_key, algorithm=['HS256'])
+           
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated!')
 
-        user = User.objects.filter(id=payload['id']).first()
+        user = User.objects.filter(email=payload['email']).first()
         serializer = UserSerializer(user)
         return Response(serializer.data)
