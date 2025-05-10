@@ -1,13 +1,19 @@
+# permissions.py
 from rest_framework import permissions
 
-class IsAdmin(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_admin()
-
-class IsCustomer(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user and request.user.is_customer()
+class BaseRolePermission(permissions.BasePermission):
+    allowed_roles = []
     
-class IsStaff(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user and request.user.is_staff()
+        if not hasattr(request, 'user_type'):
+            return False
+        return request.user_type in self.allowed_roles
+
+class IsAdmin(BaseRolePermission):
+    allowed_roles = ['admin']  # Already lowercase from middleware
+
+class IsStaff(BaseRolePermission):
+    allowed_roles = ['staff', 'admin']
+
+class IsCustomer(BaseRolePermission):
+    allowed_roles = ['customer']

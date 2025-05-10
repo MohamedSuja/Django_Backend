@@ -7,7 +7,9 @@ from ..serializers import UserRegistrationSerializer, LoginRequestSerializer, To
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 import jwt, datetime
+import uuid
 from ..models import User
+from ...utils.permissions import IsAdmin, IsStaff, IsCustomer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -20,20 +22,24 @@ class RegisterView(generics.CreateAPIView):
 
         # Access token payload (short-lived)
         access_token_payload = {
+            "user_id": user.id,
             "email": user.email,
             "user_type": user.user_type,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
             "iat": datetime.datetime.utcnow(),
             "token_type": "access",
+            "jti": str(uuid.uuid4())
         }
 
         # Refresh token payload (long-lived)
         refresh_token_payload = {
+            "user_id": user.id,
             "email": user.email,
             "user_type": user.user_type,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7),
             "iat": datetime.datetime.utcnow(),
             "token_type": "refresh",
+            "jti": str(uuid.uuid4())
         }
         secret_key = os.getenv("SECRET_KEY", "").lower()
         # Generate tokens
@@ -83,20 +89,24 @@ class LoginView(APIView):
 
         # Access token payload (short-lived)
         access_token_payload = {
+            "user_id": user.id,
             "email": user.email,
             "user_type": user.user_type,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
             "iat": datetime.datetime.utcnow(),
             "token_type": "access",
+            "jti": str(uuid.uuid4())
         }
 
         # Refresh token payload (long-lived)
         refresh_token_payload = {
+            "user_id": user.id,
             "email": user.email,
             "user_type": user.user_type,
             "exp": datetime.datetime.utcnow() + datetime.timedelta(days=7),
             "iat": datetime.datetime.utcnow(),
             "token_type": "refresh",
+            "jti": str(uuid.uuid4())
         }
 
         secret_key = os.getenv("SECRET_KEY", "").lower()
@@ -161,19 +171,23 @@ class TokenRefreshView(APIView):
                 
             # Generate new access token
             access_token_payload = {
+                "user_id": user.id,
                 "email": user.email,
                 "user_type": user.user_type,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=15),
                 'iat': datetime.datetime.utcnow(),
-                'token_type': 'access'
+                'token_type': 'access',
+                "jti": str(uuid.uuid4())
             }
 
             refresh_token_payload = {
+                "user_id": user.id,
                 "email": user.email,
                 "user_type": user.user_type,
                 'exp': datetime.datetime.utcnow() + datetime.timedelta(days=7),
                 'iat': datetime.datetime.utcnow(),
-                'token_type': 'refresh'
+                'token_type': 'refresh',
+                "jti": str(uuid.uuid4())
             }
             
             access_token = jwt.encode(access_token_payload, secret_key, algorithm='HS256')
@@ -212,28 +226,21 @@ class TokenRefreshView(APIView):
 
 class UserView(APIView):  
     def get(self, request):
-        # Get Bearer token from request headers
-        
-        auth_header =  request.META.get('HTTP_AUTHORIZATION')
-        print("Token:", auth_header)
-        if auth_header:
-            token = auth_header.split(' ')[1]
-            
-        else:
-            token = None
+       
+        token = request.COOKIES.get('access_token')
 
         if not token:
-            raise AuthenticationFailed('Unauthenticated!')
+            return Response({"error": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
         
-        
-
         try:
             secret_key = os.getenv("SECRET_KEY", "").lower()
-            payload = jwt.decode(token, secret_key, algorithm=['HS256'])
-           
+            payload = jwt.decode(token, secret_key, algorithms=["HS256"])
+            user = User.objects.get(email=payload["email"])
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
         except jwt.ExpiredSignatureError:
-            raise AuthenticationFailed('Unauthenticated!')
-
-        user = User.objects.filter(email=payload['email']).first()
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+            return Response({"error": "Token has expired."}, status=status.HTTP_401_UNAUTHORIZED)
+     
+            
+ 
+  

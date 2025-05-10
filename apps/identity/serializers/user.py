@@ -44,7 +44,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'user_type', "is_active", "username", "last_login", "created_date", "updated_date")
+        fields = ("id", "email", "user_type", "is_active", "username", "last_login", "created_date", "modified_date")
         read_only_fields = ('email', 'user_type')
 
 
