@@ -7,13 +7,14 @@ name = "pypi"
 django = "*"
 djangorestframework = "*"
 django-environ = "*"
+psycopg2-binary = "*"
 python-dotenv = "*"
 django-cors-headers = "*"
 whitenoise = "*"
 pillow = "*"
-psycopg2-binary = "*"
-djangorestframework-simplejwt = "*"
 django-debug-toolbar = "*"
+djangorestframework-simplejwt = "*"
+requests = "*"
 
 [dev-packages]
 
