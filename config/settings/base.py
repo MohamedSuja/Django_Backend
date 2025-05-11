@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     
     # Local apps
     'apps.identity',
+    'apps.properties',
 
     'config',
 

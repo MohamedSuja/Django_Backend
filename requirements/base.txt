@@ -8,3 +8,4 @@ whitenoise
 Pillow
 django-debug-toolbar
 djangorestframework-simplejwt
+requests
