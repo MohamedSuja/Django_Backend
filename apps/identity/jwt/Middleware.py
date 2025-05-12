@@ -16,6 +16,9 @@ class JWTAuthMiddleware(MiddlewareMixin):
     def process_request(self, request):
         # Skip auth for certain endpoints
         OPEN_ENDPOINTS = [
+            '',
+            '/admin',
+            '__debug__',
             '/api/v1/auth/login',
             '/api/v1/auth/register',
         ]
